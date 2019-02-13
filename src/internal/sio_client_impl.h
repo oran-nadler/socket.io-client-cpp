@@ -95,6 +95,8 @@ namespace sio
             m_socket_open_listener = nullptr;
             m_socket_close_listener = nullptr;
         }
+
+        void set_proxy(const string& proxy_uri);
         
         // Client Functions - such as send, etc.
         void connect(const std::string& uri, const std::map<std::string, std::string>& queryString,
@@ -187,6 +189,7 @@ namespace sio
         std::string m_base_url;
         std::string m_query_string;
         std::map<std::string, std::string> m_http_headers;
+        std::string m_proxy_uri;
 
         unsigned int m_ping_interval;
         unsigned int m_ping_timeout;

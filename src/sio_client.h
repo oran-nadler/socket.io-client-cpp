@@ -53,6 +53,8 @@ namespace sio
         
         void clear_socket_listeners();
         
+        void set_proxy(const std::string& proxy_uri);
+
         // Client Functions - such as send, etc.
         void connect(const std::string& uri);
 

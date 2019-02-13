@@ -68,6 +68,11 @@ namespace sio
         m_impl->clear_socket_listeners();
     }
 
+    void client::set_proxy(const std::string& proxy_uri)
+    {
+        m_impl->set_proxy(proxy_uri);
+    }
+
     void client::connect(const std::string& uri)
     {
         m_impl->connect(uri, {}, {});

@@ -198,6 +198,11 @@ namespace sio
                                   "run loop end");
     }
 
+    void client_impl::set_proxy(const string& proxy_uri)
+    {
+        m_proxy_uri = proxy_uri;
+    }
+
     void client_impl::connect_impl(const string& uri, const string& queryString)
     {
         do{
@@ -230,6 +235,15 @@ namespace sio
 
             for( auto&& header: m_http_headers ) {
                 con->replace_header(header.first, header.second);
+            }
+
+            if (m_proxy_uri != "") {
+                con->set_proxy(m_proxy_uri, ec);
+                if (ec) {
+                    m_client.get_alog().write(websocketpp::log::alevel::app,
+                                              "Set Connection Proxy Error: " + ec.message());
+                    break;
+                }
             }
 
             m_client.connect(con);
@@ -279,7 +293,7 @@ namespace sio
         if(ec || m_con.expired())
         {
             if (ec != boost::asio::error::operation_aborted)
-                LOG("ping exit,con is expired?"<<m_con.expired()<<",ec:"<<ec.message()<<endl){};
+                LOG("ping exit,con is expired?"<<m_con.expired()<<",ec:"<<ec.message()<<endl);
             return;
         }
         packet p(packet::frame_ping);
@@ -493,7 +507,7 @@ namespace sio
             m_ping_timer.reset(new boost::asio::deadline_timer(m_client.get_io_service()));
             boost::system::error_code ec;
             m_ping_timer->expires_from_now(milliseconds(m_ping_interval), ec);
-            if(ec)LOG("ec:"<<ec.message()<<endl){};
+            if(ec)LOG("ec:"<<ec.message()<<endl);
             m_ping_timer->async_wait(lib::bind(&client_impl::ping,this,lib::placeholders::_1));
             LOG("On handshake,sid:"<<m_sid<<",ping interval:"<<m_ping_interval<<",ping timeout"<<m_ping_timeout<<endl);
             return;
